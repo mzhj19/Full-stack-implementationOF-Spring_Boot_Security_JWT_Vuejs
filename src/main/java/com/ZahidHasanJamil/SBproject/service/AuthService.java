@@ -34,7 +34,7 @@ public class AuthService {
 
     var tempUser = userRepository.findByEmail(request.getEmail());
     if(!tempUser.isEmpty())  {
-      throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists.");
+      throw new UserAlreadyExistsException("User with " + request.getEmail() + " already exists.");
     }
 
     var user = User.builder()

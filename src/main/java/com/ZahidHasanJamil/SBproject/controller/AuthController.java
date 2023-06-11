@@ -7,13 +7,20 @@ import com.ZahidHasanJamil.SBproject.model.RegisterRequestDto;
 import com.ZahidHasanJamil.SBproject.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -39,8 +46,17 @@ public class AuthController {
   
   @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody RegisterRequestDto registerRequestDto, BindingResult bindingResult) throws NotValidException {
-    if(bindingResult.hasErrors()) {
-      throw new NotValidException("Email in required. Please give a valid email.");
+//    if(bindingResult.hasErrors()) {
+//      System.out.println(bindingResult.getAllErrors().);
+//      throw new NotValidException(bindingResult.getFieldError().getDefaultMessage());
+//    }
+    if (bindingResult.hasErrors()) {
+      Map<String, String> errors = new HashMap<>();
+      for (FieldError error : bindingResult.getFieldErrors()) {
+        errors.put(error.getField() + ": ", error.getDefaultMessage());
+      }
+      //return ResponseEntity.badRequest().body(errorMessage);
+      throw new NotValidException(errors.toString());
     }
       return ResponseEntity.ok(authService.register(registerRequestDto));
   }
