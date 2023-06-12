@@ -53,7 +53,7 @@ public class AuthController {
     if (bindingResult.hasErrors()) {
       Map<String, String> errors = new HashMap<>();
       for (FieldError error : bindingResult.getFieldErrors()) {
-        errors.put(error.getField() + ": ", error.getDefaultMessage());
+        errors.put(error.getField(), error.getDefaultMessage() + '\n');
       }
       //return ResponseEntity.badRequest().body(errorMessage);
       throw new NotValidException(errors.toString());

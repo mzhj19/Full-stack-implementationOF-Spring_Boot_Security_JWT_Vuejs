@@ -31,7 +31,6 @@ public class AuthService {
   }
 
   public AuthResponseDto register(RegisterRequestDto request ) throws UserAlreadyExistsException {
-
     var tempUser = userRepository.findByEmail(request.getEmail());
     if(!tempUser.isEmpty())  {
       throw new UserAlreadyExistsException("User with " + request.getEmail() + " already exists.");
