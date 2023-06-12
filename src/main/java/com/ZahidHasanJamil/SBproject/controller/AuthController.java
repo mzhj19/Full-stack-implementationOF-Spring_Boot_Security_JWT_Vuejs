@@ -7,6 +7,7 @@ import com.ZahidHasanJamil.SBproject.model.RegisterRequestDto;
 import com.ZahidHasanJamil.SBproject.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,17 +31,24 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping
-  public ResponseEntity<AuthResponseDto> login(@RequestBody LoginRequestDto registerRequestDto) {
+  public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto registerRequestDto, BindingResult bindingResult) throws NotValidException  {
     //return ResponseEntity.ok(authService.login(registerRequestDto));
 
     try {
-      System.out.println(registerRequestDto.toString() +'\n');
+      if (bindingResult.hasErrors()) {
+        Map<String, String> errors = new HashMap<>();
+        for (FieldError error : bindingResult.getFieldErrors()) {
+          errors.put(error.getField(), error.getDefaultMessage() + '\n');
+        }
+        throw new NotValidException(errors.toString());
+      }
+
       AuthResponseDto response = authService.login(registerRequestDto);
       return ResponseEntity.ok(response);
     } catch (Exception e) {
-      // Handle the exception and return an appropriate response or error message
-      System.out.println(e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+      throw new NotValidException(e.getMessage() + ".Please try again!");
+      //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
   

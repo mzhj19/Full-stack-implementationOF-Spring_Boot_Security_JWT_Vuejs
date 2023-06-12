@@ -1,6 +1,7 @@
 package com.ZahidHasanJamil.SBproject.service;
 
 import com.ZahidHasanJamil.SBproject.exception.UserAlreadyExistsException;
+import com.ZahidHasanJamil.SBproject.exception.UserNotFoundException;
 import com.ZahidHasanJamil.SBproject.model.*;
 import com.ZahidHasanJamil.SBproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,15 @@ public class AuthService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public AuthResponseDto login(LoginRequestDto request) {
+  public AuthResponseDto login(LoginRequestDto request) throws UserNotFoundException {
+
     authenticationManager.authenticate(
       new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
     );
     var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-    System.out.println(user);
+    if(user == null) {
+      throw new UserNotFoundException("Please give correct credentials");
+    }
     var jwt = jwtService.generateToken(user);
     return AuthResponseDto.builder()
       .token(jwt)
