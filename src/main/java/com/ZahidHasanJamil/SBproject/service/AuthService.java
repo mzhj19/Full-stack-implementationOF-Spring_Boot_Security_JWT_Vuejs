@@ -39,7 +39,6 @@ public class AuthService {
     if(!tempUser.isEmpty())  {
       throw new UserAlreadyExistsException("User with " + request.getEmail() + " already exists.");
     }
-
     var user = User.builder()
       .firstName(request.getFirstName())
       .lastName(request.getLastName())
